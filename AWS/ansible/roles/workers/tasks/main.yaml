@@ -1,0 +1,83 @@
+---
+- name: ensure cribl directory exists
+  file:
+    path: /opt/cribl
+    state: directory
+
+- name: user cribl present
+  ansible.builtin.user:
+    name: cribl
+    state: "present"
+    shell: "/bin/bash"
+    system: true
+    create_home: true
+    home: "/home/cribl"
+    comment: "Cribl Service account"
+
+- name: Create group
+  group:
+    name: "cribl"
+    state: present
+
+- name: Download and decompress Stream
+  unarchive:
+    src: "{{ lookup('url', 'https://cdn.cribl.io/dl/latest') }}"
+    dest: /opt/cribl/
+    mode: 0755
+    remote_src: yes
+    owner: root
+    group: root
+    # creates: /opt/cribl
+    extra_opts: [--strip-components=1]
+
+- name: ensure cribl directory exists
+  file:
+    path: /opt/cribl
+    state: directory
+
+- name: connect to leader
+  shell:
+    cmd: sudo /opt/cribl/bin/cribl mode-worker -H "{{ leader_ip }}" -p 4200 -u 'secret_token'
+
+- name: Give proper permissions to Cribl Directories
+  ansible.builtin.file:
+    path: /opt/cribl
+    owner: cribl
+    group: cribl
+    mode: 0755
+
+- name: Check if cribl.service is present on the host
+  stat:
+    path: "/etc/systemd/system/cribl.service"
+  register: criblservice
+
+- name: Delete cribl.service from previous deployment
+  ansible.builtin.command:  sudo rm -f /etc/systemd/system/cribl.service
+  when: criblservice.stat.exists
+
+- name: Permissions
+  shell:
+    cmd: sudo chown -R cribl:cribl /opt/cribl
+    
+- name: Enable Boot Start
+  shell:
+    cmd: sudo /opt/cribl/bin/cribl boot-start enable -u cribl -m systemd   
+
+- name: Give proper permissions to Cribl Directories
+  ansible.builtin.file:
+    path: /opt/cribl
+    owner: cribl
+    group: cribl
+    mode: 0755
+
+- name: Systemctl
+  shell:
+    cmd: sudo systemctl enable cribl
+
+# Pause for 5 secs to build app cache.
+- pause:
+    seconds: 5
+
+- name: Systemctl
+  shell:
+    cmd: sudo systemctl start cribl

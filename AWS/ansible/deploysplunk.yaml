@@ -1,0 +1,9 @@
+---
+- name: Deploy Satellite Server
+  hosts: all
+  gather_facts: no
+  remote_user: povadmin
+  become: yes
+
+  roles:
+  - splunk

@@ -1,0 +1,8 @@
+/.DS_Store
+AWS/terraform.*
+AWS/.terraform/*
+AWS/.terraform.*
+AWS/*.pem
+AWS/authorized_keys
+AWS/*.txt
+Azure/*

@@ -1,0 +1,9 @@
+---
+- name: Deploy Satellite Server
+  hosts: all
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+
+  roles:
+  - elastic

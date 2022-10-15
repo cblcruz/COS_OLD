@@ -1,0 +1,12 @@
+---
+- name: Install Workers
+  hosts: all
+  remote_user: povadmin
+  gather_facts: no
+  become: yes
+  vars_files:
+    - "cribl_vars.yml"
+    - "tf_ansible_vars_file.yml"
+
+  roles:
+  - { role: workers, when: tf_workers_count > 0 }

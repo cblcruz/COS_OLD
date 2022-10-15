@@ -1,0 +1,13 @@
+---
+- name: Install Cribl Stream - Leader or Single Instance
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  become: yes
+  vars_files:
+    - "cribl_vars.yml"
+    - "tf_ansible_vars_file.yml"
+
+  roles:
+  - { role: leader, when: tf_workers_count > 0 }
+  - { role: single_instance, when: tf_workers_count == 0 }
