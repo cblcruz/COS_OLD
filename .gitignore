@@ -9,7 +9,6 @@ AWS/*.pem
 AWS/authorized_keys
 AWS/*.txt
 Azure/.terraform/*
-.gitignore
 Azure/.DS_Store
 Azure/.terraform.lock.hcl
 Azure/cribl_vars.yml
@@ -18,4 +17,5 @@ Azure/terraform.tfstate
 Azure/terraform.tfstate.backup
 Azure/terraform.tfvars
 Azure/test.yaml
-/.gitignore
+.gitignore
+.gitignore
