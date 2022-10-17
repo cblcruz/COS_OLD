@@ -1,0 +1,10 @@
+---
+- name: Install Workers
+  hosts: all
+  remote_user: povadmin
+  become: yes
+  vars_files:
+    - "cribl_vars.yml"
+
+  roles:
+  - workers

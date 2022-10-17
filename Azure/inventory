@@ -1,0 +1,8 @@
+[shard0]
+[shard1]
+[shard2]
+
+[mongos]
+cribl-POV-worker-0 
+cribl-POV-worker-1 
+cribl-POV-worker-2 
