@@ -18,4 +18,4 @@ Azure/terraform.tfstate
 Azure/terraform.tfstate.backup
 Azure/terraform.tfvars
 Azure/test.yaml
-.gitignore
+/.gitignore
