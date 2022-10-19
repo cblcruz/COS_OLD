@@ -11,26 +11,21 @@ The project basically uses Terraform provisioning the infrastructure currently o
 
 #### Deploying to Azure:
 * 1 Leader node
-* N worker nodes (connected not configured)
+* N worker nodes (connected not configured) 
 * POV user (povadmin)
 * Azure load balancer (front end IP only)
 
 #### Deploying on AWS
-* 1 Leader Node
-* N Worker nodes (connected not configured)
+* 1 Cribl Stream instance - Leader or Single node depending on tfvars seleciton
+* N Worker nodes (connected and configured with 2 destinations)
 * Creates a aws_key_pair for SSH use
 * Creates a POV user (povadmin) capable to ssh to all EC2 instances via SSH with root privileges.
-* ELB with the EC2 instances on the Target Group
+* ELB with all EC2 instances on the Target Group (lb_create variable is true in tfvars)
 * S3 bucket with IAM policy applied to the POV user (povadmin)
 * 1 Satallite Box. An EC2 instance to host all peripheral services.
 
 #### Deploying on Docker
-* Splunk deployment, single instance. 
-* Elastic deployment with Elasticserch, Kibana, and Logstash. 
-* MinIO (Selective via variables)
-* REDIS server (Selective via variables)
-* All containers added to the same network
-* Rsyslog forking data to the Workers
+
 
 #### Authentication on Cloud Providers
 All RSA keys generated are ignored by .gitignore these cases are created during runtime
@@ -69,66 +64,31 @@ Current dependencies (also installed with terrform init) used accross the AWS so
 
 ### Structure
 ```bash.
-├── .terraform
-│   ├── modules
-│   │   └── modules.json
-│   └── providers
-│       └── registry.terraform.io
-│           └── hashicorp
-│               ├── aws
-│               │   ├── 4.24.0
-│               │   │   └── darwin_amd64
-│               │   │       └── terraform-provider-aws_v4.24.0_x5
-│               │   └── 4.26.0
-│               │       └── darwin_amd64
-│               │           └── terraform-provider-aws_v4.26.0_x5
-│               ├── local
-│               │   └── 2.2.3
-│               │       └── darwin_amd64
-│               │           └── terraform-provider-local_v2.2.3_x5
-│               ├── null
-│               │   └── 3.1.1
-│               │       └── darwin_amd64
-│               │           └── terraform-provider-null_v3.1.1_x5
-│               └── tls
-│                   ├── 4.0.1
-│                   │   └── darwin_amd64
-│                   │       └── terraform-provider-tls_v4.0.1_x5
-│                   └── 4.0.3
-│                       └── darwin_amd64
-│                           └── terraform-provider-tls_v4.0.3_x5
-├── README.md
+AWS
+ .
 ├── ansible
 │   ├── ansible.cfg
-│   ├── configleader.yaml
 │   ├── deployelk.yaml
 │   ├── deployleader.yaml
 │   ├── deployminio.yaml
 │   ├── deployredis.yaml
 │   ├── deploysatellite.yaml
 │   ├── deploysplunk.yaml
-│   ├── deploysplunkidxc.yaml
 │   ├── deploywrks.yaml
 │   ├── roles
-│   │   ├── cribl
-│   │   │   ├── files
-│   │   │   │   ├── License
-│   │   │   │   ├── LicenseKey.yml
-│   │   │   │   └── out.j2
-│   │   │   └── tasks
-│   │   │       └── main.yml
 │   │   ├── elastic
 │   │   │   ├── files
-│   │   │   │   ├── .env
 │   │   │   │   ├── docker-compose.yml
-│   │   │   │   ├── logstash
-│   │   │   │   │   └── logstash.conf
-│   │   │   │   └── logstash\ 2
+│   │   │   │   └── logstash
+│   │   │   │       └── logstash.conf
 │   │   │   └── tasks
 │   │   │       └── main.yaml
 │   │   ├── leader
+│   │   │   ├── files
+│   │   │   │   ├── LicenseKey.yml
+│   │   │   │   └── out.yaml.j2
 │   │   │   └── tasks
-│   │   │       └── main.yaml
+│   │   │       └── main.yml
 │   │   ├── minio
 │   │   │   ├── files
 │   │   │   │   └── docker-compose.yml
@@ -142,8 +102,15 @@ Current dependencies (also installed with terrform init) used accross the AWS so
 │   │   ├── satellite
 │   │   │   └── tasks
 │   │   │       └── main.yaml
+│   │   ├── single_instance
+│   │   │   ├── files
+│   │   │   │   ├── LicenseKey.yml
+│   │   │   │   └── out.yaml.j2
+│   │   │   └── tasks
+│   │   │       └── main.yml
 │   │   ├── splunk
 │   │   │   ├── files
+│   │   │   │   ├── cribl_pov_indexes.tgz
 │   │   │   │   └── docker-compose.yml
 │   │   │   └── tasks
 │   │   │       └── main.yaml
@@ -152,15 +119,11 @@ Current dependencies (also installed with terrform init) used accross the AWS so
 │   │           └── main.yaml
 │   └── tf_ansible_vars_file_sample.yml
 ├── ansible.cfg
-├── calcsize.sh
-├── cribl
-│   ├── cribl.tgz
-│   ├── main.tf
-│   └── variables.tf
 ├── docker_env.tf
+├── images
+│   └── satbox_ctop.png
 ├── inventory.tmpl
 ├── lb.tf
-├── ldinstall.sh
 ├── leader.tf
 ├── main.tf
 ├── movefiles.sh
@@ -170,7 +133,6 @@ Current dependencies (also installed with terrform init) used accross the AWS so
 ├── s3_bucket.tf
 ├── sec_groups.tf
 ├── terraform.tfvars
-├── terraform.tfvars.sample
 ├── tf_ansible_vars.tf
 ├── variables.tf
 └── workers.tf
@@ -314,10 +276,8 @@ ansible
 ├── deploysplunkidxc.yaml
 ├── deploywrks.yaml
 ├── roles
-│   ├── .DS_Store
 │   ├── cribl
 │   │   ├── files
-│   │   │   ├── License
 │   │   │   ├── LicenseKey.yml
 │   │   │   └── out.j2
 │   │   └── tasks
@@ -381,3 +341,34 @@ CONTAINER ID   NAMES           IMAGE                  PORTS
 ### Azure
 
 #### Content
+
+```bash
+Azure
+.
+├── ansible
+│   ├── ansible.cfg
+├── ansible.cfg
+├── cribl_vars.yml
+├── darwin_amd64
+├── deployleader.yaml
+├── deploywrks.yaml
+├── installworker.sh
+├── inventory
+├── inventory.tmpl
+├── ldinstall.sh
+├── leader.tf
+├── main.tf
+├── outputs.tf
+├── private_ips.txt
+├── roles
+│   ├── leader
+│   │   └── tasks
+│   │       └── main.yaml
+│   └── workers
+│       └── tasks
+│           └── main.yaml
+├── secrules.tf
+├── terraform.tfvars
+├── variables.tf
+└── workers.tf
+```

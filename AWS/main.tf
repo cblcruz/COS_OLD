@@ -37,14 +37,6 @@ resource "aws_default_vpc" "cribl_pov" {
   }
 }
 
-# resource "aws_default_subnet" "default_cribl_sb" {
-#   availability_zone = "us-west-2a"
-
-#   tags = {
-#     Name = "Default subnet for Cribl POV test us-west-2a"
-#   }
-# }
-
 resource "tls_private_key" "linux_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -53,7 +45,6 @@ resource "tls_private_key" "linux_key" {
 resource "aws_key_pair" "cribl_key" {
   key_name   = "cribl_key"
   public_key = tls_private_key.linux_key.public_key_openssh
-
 }
 
 # We want to save the private key to our machine
@@ -73,4 +64,9 @@ resource "local_file" "cribl_key" {
   depends_on = [local_file.linuxkey,
     aws_security_group.leader_sg,
   ]
+}
+resource "null_resource" "NSCFConstantString" {
+  provisioner "local-exec" {
+    command = "export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES"
+   }
 }
