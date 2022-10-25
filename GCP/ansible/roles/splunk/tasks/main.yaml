@@ -1,0 +1,23 @@
+---
+- name: create directory if they don't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: povadmin
+    group: povadmin
+    mode: 0775
+  loop:
+    - /home/povadmin/splunk
+
+- name: copy Docker Compose files
+  copy:
+    src: files/{{ item }}
+    dest: /home/povadmin/splunk/{{ item }}
+  loop:
+  - docker-compose.yml
+
+- name: deploy Docker Compose stack
+  community.docker.docker_compose:
+    project_src: /home/povadmin/splunk/
+    files:
+    - docker-compose.yml

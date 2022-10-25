@@ -17,3 +17,8 @@ variable "workers_count" {
   type    = number
   default = 1
 }
+
+variable "satellite_box" {
+  type    = bool
+  default = false
+}

@@ -1,0 +1,49 @@
+outputs:
+  out_splunk_tcp:
+    systemFields:
+      - cribl_pipe
+    streamtags: []
+    port: 9997
+    nestedFields: none
+    throttleRatePerSec: "0"
+    tls:
+      disabled: true
+    connectionTimeout: 10000
+    writeTimeout: 60000
+    enableMultiMetrics: false
+    enableACK: true
+    onBackpressure: drop
+    authType: manual
+    authToken: ""
+    type: splunk
+    host: {{ tf_satellite_privete_ip }}
+  out_to_s3:
+    systemFields:
+      - cribl_pipe
+    streamtags: []
+    awsAuthenticationMethod: auto
+    signatureVersion: v4
+    reuseConnections: true
+    rejectUnauthorized: true
+    enableAssumeRole: false
+    stagePath: $CRIBL_HOME/state/outputs/staging
+    addIdToStagePath: true
+    removeEmptyDirs: false
+    objectACL: private
+    partitionExpr: "C.Time.strftime(_time ? _time : Date.now()/1000, '%Y/%m/%d')"
+    format: json
+    baseFileName: "`CriblOut`"
+    fileNameSuffix: '`.${C.env["CRIBL_WORKER_ID"]}.${__format}${__compression ===
+      "gzip" ? ".gz" : ""}`'
+    maxFileSizeMB: 32
+    maxFileOpenTimeSec: 300
+    maxFileIdleTimeSec: 30
+    maxOpenFiles: 100
+    onBackpressure: block
+    compress: none
+    type: s3
+    bucket: cribl-pov-bucket
+    destPath: cribl
+    region: us-west-2
+    awsApiKey: "{{ tf_access_key }}"
+    awsSecretKey: "{{tf_secret_key }}"  

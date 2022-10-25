@@ -41,3 +41,12 @@ GCP/terraform.tfvars
 GCP/.terraform.lock.hcl
 .gitignore
 Azure/ansible/roles/single_instance/files/LicenseKey.yml
+GCP/ansible/roles/leader/files/LicenseKey.yml
+GCP/ansible/roles/satellite/.DS_Store
+.gitignore
+GCP/ansible/roles/single_instance/files/LicenseKey.yml
+GCP/ansible/roles/splunk/.DS_Store
+GCP/ansible/roles/splunk/files/.DS_Store
+GCP/ansible/roles/.DS_Store
+GCP/ansible/.DS_Store
+GCP/ansible/ansible.txt

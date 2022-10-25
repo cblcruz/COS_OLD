@@ -1,0 +1,18 @@
+version: "3.6"
+
+services:
+  so1:
+    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
+    container_name: splunk
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD=passtest
+      - SPLUNK_ENABLE_LISTEN=9997
+    ports:
+      - 8000:8000
+      - 9997:9997
+      - 8089:8089
+    networks:
+      - cribl_pov 
+networks:
+  cribl_pov:

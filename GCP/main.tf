@@ -23,6 +23,11 @@ module "cribl-leader" {
 }
 
 module "cribl-workers" {
-  source        = ".//modules/workers"
+  source = ".//modules/workers"
   workers_count = var.workers_count
+}
+
+module "satellit-box" {
+  source = ".//modules/satellite"
+  count  = var.satellite_box ? 1 : 0
 }

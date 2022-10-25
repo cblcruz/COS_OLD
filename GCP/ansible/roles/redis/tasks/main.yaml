@@ -1,0 +1,28 @@
+---
+- name: Wait 30 seconds, but only start checking after 30 seconds
+  wait_for_connection:
+    delay: 10
+    timeout: 30
+
+- name: create directory if they don't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: povadmin
+    group: povadmin
+    mode: 0775
+  loop:
+    - /home/povadmin/redis
+
+- name: copy Docker Compose files
+  copy:
+    src: files/{{ item }}
+    dest: /home/povadmin/redis/{{ item }}
+  loop:
+  - docker-compose.yaml
+
+- name: deploy Docker Compose stack
+  community.docker.docker_compose:
+    project_src: /home/povadmin/redis/
+    files:
+    - docker-compose.yaml
