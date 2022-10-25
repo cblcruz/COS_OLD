@@ -70,10 +70,10 @@ resource "azurerm_linux_virtual_machine" "worker" {
 resource "local_file" "ansible_inventory" {
   content = templatefile("inventory.tmpl",
     {
-      ansible_group_index = aws_instance.worker.*.tags.ansible-index,
-      ansible_group_workers = aws_instance.worker.*.tags.ansible-group,
-      workers_ip            = aws_instance.worker.*.public_ip_address,
-      }
+      ansible_group_index   = azurerm_linux_virtual_machine.worker[*].tags.ansible-index,
+      ansible_group_workers = azurerm_linux_virtual_machine.worker.*.tags.ansible-group,
+      workers_ip            = azurerm_linux_virtual_machine.worker[*].public_ip_address,
+    }
   )
   filename = "inventory"
 }
@@ -94,7 +94,7 @@ resource "null_resource" "Ansible4Ubuntu" {
   provisioner "local-exec" {
 
     # command = "sleep 20;ansible-playbook -i ${join(" ", azurerm_linux_virtual_machine.worker.*.public_ip_address)}, --private-key linuxkey.pem test.yaml"
-    command = "sleep 20;ansible-playbook -i inventory --private-key linuxkey.pem deploywrks.yaml"
+    command = "sleep 40;ansible-playbook -i inventory --private-key linuxkey.pem ./ansible/deploywrks.yaml"
   }
   depends_on = [azurerm_network_interface.cribl_leader,
     azurerm_network_security_group.worker,

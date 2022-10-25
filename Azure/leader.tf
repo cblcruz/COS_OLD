@@ -1,4 +1,3 @@
-
 # Azure Public IP allocation for the Cribl Leader.
 resource "azurerm_public_ip" "leader" {
   name                = "cribl-leader-VM-IP"
@@ -32,7 +31,7 @@ resource "azurerm_linux_virtual_machine" "leader" {
   location              = azurerm_resource_group.cribl.location
   size                  = "Standard_ds1_v2"
   admin_username        = "povadmin"
-  computer_name         = "CriblLeader"
+  computer_name         = "leader"
   network_interface_ids = [azurerm_network_interface.cribl_leader.id]
 
   admin_ssh_key {
@@ -48,7 +47,7 @@ resource "azurerm_linux_virtual_machine" "leader" {
   source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
-    sku       = "19.04"
+    sku       = "20.04"
     version   = "latest"
   }
 
@@ -59,7 +58,7 @@ resource "azurerm_linux_virtual_machine" "leader" {
 
 }
 
-resource "null_resource" "Ansible" {
+resource "null_resource" "Ansible_Leader" {
   connection {
     #host        = self.public_ip_address
     host        = azurerm_linux_virtual_machine.leader.public_ip_address
@@ -74,19 +73,27 @@ resource "null_resource" "Ansible" {
 
   provisioner "local-exec" {
 
-    command = "sleep 40;ansible-playbook -i '${azurerm_linux_virtual_machine.leader.public_ip_address},' --private-key linuxkey.pem deployleader.yaml"
+    command = "sleep 30;ansible-playbook -i '${azurerm_linux_virtual_machine.leader.public_ip_address},' --private-key linuxkey.pem ./ansible/deployleader.yaml"
   }
   depends_on = [
-    azurerm_network_interface.cribl_leader,
-    azurerm_network_security_group.leader,
-    azurerm_network_security_rule.leader-sec-rules,
-    azurerm_network_interface_security_group_association.leader,
     azurerm_linux_virtual_machine.leader,
     azurerm_network_interface.cribl_leader,
     tls_private_key.linux_key
-    ]
+  ]
 }
 
+resource "local_file" "cribl-vars" {
+  content  = <<-DOC
+  leader_ip: ${azurerm_linux_virtual_machine.leader.public_ip_address}
+  Leader Host: ${azurerm_linux_virtual_machine.leader.computer_name}
+  
+  DOC
+  filename = "ansible/cribl_vars.yml"
+
+  depends_on = [azurerm_network_interface.cribl_leader,
+    azurerm_linux_virtual_machine.leader,
+  ]
+}
 # Azure Security Group for the Leader for the Cribl Leader.
 resource "azurerm_network_security_group" "leader" {
   name                = "leader-security-group1"

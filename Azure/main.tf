@@ -1,24 +1,28 @@
 # Cribl Stream/Edge Terraform Povisioning with Ansibl Deployment
 # Author: Claudio Cruz
 
-# Azure Provider definition for the entire environmet being deploy
 terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=3.13.0"
+      version = "3.27.0"
     }
   }
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
+  subscription_id = var.subscription_id
+  tenant_id       = var.tenant_id
 }
-
 # Azure Resource Group - using a single resource group for cribl
 resource "azurerm_resource_group" "cribl" {
   name     = "cribl-resources"
-  location = "East US"
+  location = var.az_location
 }
 
 locals {
@@ -60,15 +64,9 @@ resource "azurerm_subnet" "cribl" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-resource "local_file" "cribl-vars" {
-  content  = <<-DOC
-  leader_ip: ${azurerm_linux_virtual_machine.leader.public_ip_address}
-  Leader Host: ${azurerm_linux_virtual_machine.leader.computer_name}
-  
-  DOC
-  filename = "cribl_vars.yml"
 
-  depends_on = [azurerm_network_interface.cribl_leader,
-    azurerm_linux_virtual_machine.leader,
-  ]
+resource "null_resource" "NSCFConstantString" {
+  provisioner "local-exec" {
+    command = "export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES"
+  }
 }

@@ -1,8 +1,0 @@
----
-- name: Install Nginx
-  hosts: all
-  remote_user: povadmin
-  become: yes
-
-  roles:
-  - nginx

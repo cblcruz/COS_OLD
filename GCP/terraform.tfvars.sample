@@ -1,0 +1,4 @@
+project       = "your project id"
+region        = "region"
+zone          = "zone"
+workers_count = 2

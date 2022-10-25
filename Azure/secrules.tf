@@ -74,6 +74,63 @@ locals {
       source_address_prefix      = "*"
       destination_address_prefix = "*"
     }
+
+    syslog = {
+      name                       = "syslogtcp"
+      priority                   = 203
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "9154"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+    syslogu = {
+      name                       = "syslogudp"
+      priority                   = 204
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Udp"
+      source_port_range          = "*"
+      destination_port_range     = "9154"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+    splunkin = {
+      name                       = "splunkin"
+      priority                   = 205
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "9997"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+    splunksearch = {
+      name                       = "splunksearch"
+      priority                   = 206
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "8089"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+    tcpjson = {
+      name                       = "tcpjson"
+      priority                   = 207
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "10097"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
   }
+
 
 }

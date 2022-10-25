@@ -1,4 +1,5 @@
 outputs:
+%{ for ip in tf_satellite_privete_ip ~}
   out_splunk_tcp:
     systemFields:
       - cribl_pipe
@@ -16,7 +17,8 @@ outputs:
     authType: manual
     authToken: ""
     type: splunk
-    host: {{ tf_satellite_privete_ip }}
+    host: ${ip} 
+  %{ endfor ~}
   out_to_s3:
     systemFields:
       - cribl_pipe

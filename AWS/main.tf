@@ -1,3 +1,6 @@
+# Cribl Stream/Edge Terraform Povisioning with Ansibl Deployment
+# Author: Claudio Cruz
+
 terraform {
   required_providers {
     aws = {
