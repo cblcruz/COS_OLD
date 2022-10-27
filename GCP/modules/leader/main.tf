@@ -42,29 +42,6 @@ provisioner "remote-exec" {
     }
   }
     provisioner "local-exec" {
-    command = "ansible-playbook  -i ${google_compute_instance.leader.network_interface.0.access_config.0.nat_ip}, --private-key ../../linuxkey.pem ../../ansible/deployleader.yaml"
+    command = "ansible-playbook  -i ${google_compute_instance.leader.network_interface.0.access_config.0.nat_ip}, --private-key ../../linuxkey.pem ../ansible/deployleader.yaml"
   }
 }
-output "leader_IP" {
-  value = google_compute_instance.leader.network_interface.0.access_config.0.nat_ip
-}
-
-# resource "null_resource" "Ansible_Laeder" {
-#   connection {
-#     host        = google_compute_instance.network_interface.access_config.0.nat_ip
-#     user        = "${var.username}"
-#     type        = "ssh"
-#     private_key = "${var.ssh-key}"
-#   }
-
-#   # triggers = {
-#   #   aws_instance_id = join(",", aws_instance.leader.*.id)
-#   # }
-
-#   provisioner "local-exec" {
-
-#     command = "sleep 30;ansible-playbook -i '${google_compute_instance.leader.0.nat_ip},' --private-key linuxkey.pem ./ansible/deployleader.yaml"
-#   }
-
-#   depends_on = [google_compute_instance.leader]
-# }
