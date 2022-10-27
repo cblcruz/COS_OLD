@@ -37,11 +37,15 @@ provisioner "remote-exec" {
     connection {
       type        = "ssh"
       user        = "${var.username}"
-      private_key = "${var.ssh-key}"
+      private_key = file("${var.private_key_path}")
       host        = google_compute_instance.leader.network_interface.0.access_config.0.nat_ip
     }
   }
     provisioner "local-exec" {
-    command = "ansible-playbook  -i ${google_compute_instance.leader.network_interface.0.access_config.0.nat_ip}, --private-key ../../linuxkey.pem ../ansible/deployleader.yaml"
+    command = "ansible-playbook  -i ${google_compute_instance.leader.network_interface.0.access_config.0.nat_ip}, --private-key ${var.private_key_path} ../ansible/deployleader.yaml"
   }
+}
+
+output "showpath" {
+  value = "${var.private_key_path}"
 }

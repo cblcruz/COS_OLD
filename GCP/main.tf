@@ -42,6 +42,7 @@ module "cribl-leader" {
   network  = google_compute_network.vpc_network.name
   ssh-key  = tls_private_key.linux_key.public_key_openssh
   username = var.username
+  private_key_path = var.private_key_path
 
 }
 

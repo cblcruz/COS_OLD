@@ -32,6 +32,11 @@ variable "ssh-key" {
   EOF
 }
 
+variable "private_key_path" {
+  description = "privatekey_path"
+  type        = string
+  default     = "./linuxkey.pem"
+}
 
 # Cribl Environment variables
 
