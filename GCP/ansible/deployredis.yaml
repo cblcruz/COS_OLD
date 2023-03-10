@@ -1,8 +1,0 @@
----
-- name: Deploy Redis Server
-  hosts: all
-  remote_user: ubuntu
-  become: yes
-
-  roles:
-  - redis
