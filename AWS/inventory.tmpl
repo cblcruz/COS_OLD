@@ -1,6 +1,0 @@
-[leader]
-
-[workers]
-%{ for index, group in ansible_group_workers ~}
-${workers_ip[index]} 
-%{ endfor ~}
